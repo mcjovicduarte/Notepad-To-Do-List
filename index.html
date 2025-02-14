@@ -16,7 +16,6 @@
             height: 100vh;
             color: #333;
         }
-
         .container {
             background: white;
             border-radius: 10px;
@@ -24,102 +23,40 @@
             padding: 30px;
             width: 350px;
             text-align: center;
-            transition: transform 0.3s;
         }
-
-        .container:hover {
-            transform: scale(1.02);
-        }
-
-        h1 {
-            font-size: 28px;
-            color: #3a3a3a;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-
+        h1 { color: #3a3a3a; }
         #task {
             width: 100%;
             padding: 12px;
-            font-size: 16px;
+            margin-bottom: 10px;
             border: 2px solid #ddd;
             border-radius: 5px;
-            outline: none;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
         }
-
-        #task:focus {
-            border-color: #ff7e5f;
-        }
-
         #addTask {
-            padding: 12px 25px;
-            font-size: 16px;
-            color: white;
+            padding: 12px;
             background-color: #ff7e5f;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-
-        #addTask:hover {
-            background-color: #feb47b;
-            transform: scale(1.05);
-        }
-
         ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
-            margin: 0;
         }
-
         li {
             background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease;
             cursor: pointer;
         }
-
-        li:hover {
-            background-color: #e0e0e0;
-        }
-
-        li.completed {
-            text-decoration: line-through;
-            background-color: #d6f9d6;
-            color: #388e3c;
-        }
-
         .deleteTask {
-            color: #e57373;
-            font-weight: bold;
+            color: red;
             cursor: pointer;
-            transition: color 0.3s ease;
         }
-
-        .deleteTask:hover {
-            color: #c62828;
-        }
-
-        /* Stats section */
-        .task-stats {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .task-stats p {
-            margin: 5px 0;
-        }
-
+        .completed { text-decoration: line-through; color: green; }
     </style>
 </head>
 <body>
@@ -128,86 +65,58 @@
         <input type="text" id="task" placeholder="Add a new task..." />
         <button id="addTask">Add Task</button>
         <ul id="taskList"></ul>
-        <div class="task-stats">
-            <p>Total Tasks: <span id="totalTasks">0</span></p>
-            <p>Completed Tasks: <span id="completedTasks">0</span></p>
-            <p>Remaining Tasks: <span id="remainingTasks">0</span></p>
+        <div>
+            <p>Total: <span id="totalTasks">0</span></p>
+            <p>Completed: <span id="completedTasks">0</span></p>
+            <p>Remaining: <span id="remainingTasks">0</span></p>
         </div>
     </div>
-
+    
     <script>
         let totalTasks = 0;
         let completedTasks = 0;
 
-        // Add task function
+        function updateTaskCount() {
+            document.getElementById("totalTasks").textContent = totalTasks;
+            document.getElementById("completedTasks").textContent = completedTasks;
+            document.getElementById("remainingTasks").textContent = totalTasks - completedTasks;
+        }
+
         function addTask() {
             const taskInput = document.getElementById("task");
             const taskText = taskInput.value.trim();
-            if (taskText !== "") {
-                const taskList = document.getElementById("taskList");
-                const newTask = document.createElement("li");
-                newTask.innerHTML = ${taskText} <span class="deleteTask">Delete</span>;
-                taskList.appendChild(newTask);
+            if (taskText === "") return;
 
-                totalTasks++;
-                document.getElementById("totalTasks").textContent = totalTasks;
-                updateRemainingTasks();
+            const taskList = document.getElementById("taskList");
+            const newTask = document.createElement("li");
+            newTask.innerHTML = `${taskText} <span class="deleteTask">❌</span>`;
+            taskList.appendChild(newTask);
 
-                taskInput.value = "";
-            }
+            totalTasks++;
+            updateTaskCount();
+            taskInput.value = "";
         }
 
-        // Delete task function
-        function deleteTask(task) {
-            task.remove();
-            totalTasks--;
-            if (task.classList.contains("completed")) {
-                completedTasks--;
-                document.getElementById("completedTasks").textContent = completedTasks;
-            }
-            document.getElementById("totalTasks").textContent = totalTasks;
-            updateRemainingTasks();
-        }
-
-        // Mark task as completed
-        function toggleTaskCompletion(task) {
-            if (task.classList.contains("completed")) {
-                task.classList.remove("completed");
-                completedTasks--;
-            } else {
-                task.classList.add("completed");
-                completedTasks++;
-            }
-
-            document.getElementById("completedTasks").textContent = completedTasks;
-            updateRemainingTasks();
-        }
-
-        // Update remaining tasks
-        function updateRemainingTasks() {
-            const remainingTasks = totalTasks - completedTasks;
-            document.getElementById("remainingTasks").textContent = remainingTasks;
-        }
-
-        // Event listeners
         document.getElementById("addTask").addEventListener("click", addTask);
         document.getElementById("task").addEventListener("keypress", (event) => {
-            if (event.key === "Enter") {
-                addTask();
-            }
+            if (event.key === "Enter") addTask();
         });
 
-        // Task event delegation
         document.getElementById("taskList").addEventListener("click", (event) => {
             const taskItem = event.target.closest("li");
             if (!taskItem) return;
 
             if (event.target.classList.contains("deleteTask")) {
-                deleteTask(taskItem);
+                taskItem.remove();
+                totalTasks--;
+                if (taskItem.classList.contains("completed")) completedTasks--;
             } else {
-                toggleTaskCompletion(taskItem);
+                taskItem.classList.toggle("completed");
+                completedTasks += taskItem.classList.contains("completed") ? 1 : -1;
             }
+            updateTaskCount();
         });
     </script>
 </body>
 </html>
+
