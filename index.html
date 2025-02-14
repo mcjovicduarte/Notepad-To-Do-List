@@ -6,117 +6,89 @@
     <title>To-Do List</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(100deg, #91221E, #030202);
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #333;
+            background: linear-gradient(to right, #8B0000, #000000);
+            font-family: Arial, sans-serif;
         }
         .container {
             background: white;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            width: 350px;
             text-align: center;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        h1 { color: #3a3a3a; }
-        #task {
+        input {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             margin-bottom: 10px;
-            border: 2px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 5px;
         }
-        #addTask {
-            padding: 12px;
-            background-color: #ff7e5f;
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #FF4500;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
+        button:hover {
+            background: #E03E00;
+        }
         ul {
-            list-style: none;
+            list-style-type: none;
             padding: 0;
+            margin-top: 10px;
         }
         li {
-            background: #f9f9f9;
-            padding: 10px;
-            margin-top: 5px;
+            background: #f4f4f4;
+            padding: 8px;
+            margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
+            border-radius: 5px;
+        }
+        .delete {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            border-radius: 3px;
             cursor: pointer;
         }
-        .deleteTask {
-            color: red;
-            cursor: pointer;
+        .delete:hover {
+            background: darkred;
         }
-        .completed { text-decoration: line-through; color: green; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>To-Do List</h1>
-        <input type="text" id="task" placeholder="Add a new task..." />
-        <button id="addTask">Add Task</button>
+        <h2>To-Do List</h2>
+        <input type="text" id="taskInput" placeholder="Add a new task...">
+        <button onclick="addTask()">Add Task</button>
         <ul id="taskList"></ul>
-        <div>
-            <p>Total: <span id="totalTasks">0</span></p>
-            <p>Completed: <span id="completedTasks">0</span></p>
-            <p>Remaining: <span id="remainingTasks">0</span></p>
-        </div>
     </div>
-    
+
     <script>
-        let totalTasks = 0;
-        let completedTasks = 0;
-
-        function updateTaskCount() {
-            document.getElementById("totalTasks").textContent = totalTasks;
-            document.getElementById("completedTasks").textContent = completedTasks;
-            document.getElementById("remainingTasks").textContent = totalTasks - completedTasks;
-        }
-
         function addTask() {
-            const taskInput = document.getElementById("task");
-            const taskText = taskInput.value.trim();
-            if (taskText === "") return;
-
-            const taskList = document.getElementById("taskList");
-            const newTask = document.createElement("li");
-            newTask.innerHTML = `${taskText} <span class="deleteTask">❌</span>`;
-            taskList.appendChild(newTask);
-
-            totalTasks++;
-            updateTaskCount();
-            taskInput.value = "";
+            let input = document.getElementById("taskInput");
+            let task = input.value.trim();
+            if (task === "") return;
+            
+            let li = document.createElement("li");
+            li.innerHTML = `${task} <button class='delete' onclick='deleteTask(this)'>Delete</button>`;
+            document.getElementById("taskList").appendChild(li);
+            input.value = "";
         }
-
-        document.getElementById("addTask").addEventListener("click", addTask);
-        document.getElementById("task").addEventListener("keypress", (event) => {
-            if (event.key === "Enter") addTask();
-        });
-
-        document.getElementById("taskList").addEventListener("click", (event) => {
-            const taskItem = event.target.closest("li");
-            if (!taskItem) return;
-
-            if (event.target.classList.contains("deleteTask")) {
-                taskItem.remove();
-                totalTasks--;
-                if (taskItem.classList.contains("completed")) completedTasks--;
-            } else {
-                taskItem.classList.toggle("completed");
-                completedTasks += taskItem.classList.contains("completed") ? 1 : -1;
-            }
-            updateTaskCount();
-        });
+        
+        function deleteTask(button) {
+            button.parentElement.remove();
+        }
     </script>
 </body>
 </html>
-
